@@ -1,8 +1,8 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const router = express.Router();
+const mongoose = require('mongoose');
 
-// import models schemas
+// import schemas and make models
 const todoSchema = require('../schemas/todoSchema');
 const Todo = new mongoose.model('Todo', todoSchema);
 
@@ -10,24 +10,44 @@ const Todo = new mongoose.model('Todo', todoSchema);
 // define route
 
 router.get('/', async (req, res) => {
-    return 'success connect controller'
+    await Todo.find({})
+        .then((result) => {
+            return res.send({
+                data: result,
+                status: 200
+            })
+        })
+        .catch((err) => {
+            return res.send('server error');
+        })
 });
+
+router.put('/:id', async (req, res) => {
+    await Todo.updateOne({ _id: req.params.id }, {
+        $set: {
+            status: 10
+        }
+    })
+        .then(() => {
+            return res.send({ status: 200, message: 'Success' })
+        })
+        .catch((error) => {
+            return res.send({ status: 500, message: 'server error' });
+
+        });
+})
 
 router.post('/', async (req, res) => {
     const newTodo = new Todo(req.body);
-    console.log(newTodo);
-    // await newTodo.save((err) => {
-    //     if (err) {
-    //         res.status(500).json({
-    //             error: 'server error'
-    //         })
-    //     }
-    //     else {
-    //         res.status(200).json({
-    //             message: 'create success'
-    //         })
-    //     }
-    // })
+
+    await newTodo.save()
+        .then(() => {
+            return res.send({ status: 200, message: 'Success' })
+        })
+        .catch((error) => {
+            return res.send({ status: 500, message: 'server error' });
+
+        });
 });
 
 

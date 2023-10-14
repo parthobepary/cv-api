@@ -3,12 +3,19 @@ const mongoose = require('mongoose');
 const todoSchema = mongoose.Schema({
     title: {
         type: String,
-        require: true
+        required: true,
+        default: 'partho bepary'
     },
-    description: String,
+    description: {
+        type: String,
+        required: true,
+        default: 'hello partho. how are you?'
+
+    },
     status: {
         type: Number,
-        require: true
+        required: true,
+        default: 1
     },
     date: {
         type: Date,
