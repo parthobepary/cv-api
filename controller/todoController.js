@@ -22,6 +22,16 @@ router.get('/', async (req, res) => {
         })
 });
 
+router.get('/:id', async (req, res) => {
+    await Todo.find({ _id: req.params.id })
+        .then((result) => {
+            return res.send({ status: 200, data: result })
+        })
+        .catch((error) => {
+            return res.send({ status: 500, message: 'server error' })
+        })
+});
+
 router.put('/:id', async (req, res) => {
     await Todo.updateOne({ _id: req.params.id }, {
         $set: {
