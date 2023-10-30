@@ -51,14 +51,17 @@ router.post('/', async (req, res) => {
     const newTodo = new Todo(req.body);
 
     await newTodo.save()
-        .then(() => {
-            return res.send({ status: 200, message: 'Success' })
+        .then((result) => {
+            return res.send({ status: 200, message: 'Success', result })
         })
         .catch((error) => {
-            return res.send({ status: 500, message: 'server error' });
+            return res.send({ status: 500, message: 'server error', error});
 
         });
 });
 
 
 module.exports = router;
+
+
+// https://www.youtube.com/watch?v=83ijtzyWi78&list=PLp50dWW_m40WYEuXSf4RmrKmOtWC5k3bU&index=11
