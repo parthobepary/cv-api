@@ -83,6 +83,33 @@ router.post('/search', async (req, res) => {
 })
 
 // delete one
+router.put('/:id', async (req, res) => {
+    try {
+        await Contact.findByIdAndUpdate({ _id: req.params.id }, req.body, { new: true })
+            .then((result) => {
+                return res.send({ status: 200, message: 'Success', result })
+            })
+            .catch((error) => {
+                return res.send({ status: 500, message: 'Data not fond', error })
+            })
+    } catch (error) {
+        res.send({ status: 500, message: 'server error', error })
+    }
+})
+
 // update  one
+router.delete('/:id', async (req, res) => {
+    try {
+        await Contact.findByIdAndDelete({ _id: req.params.id }, req.body, { new: true })
+            .then((result) => {
+                return res.send({ status: 200, message: 'Success', result })
+            })
+            .catch((error) => {
+                return res.send({ status: 500, message: 'Data not fond', error })
+            })
+    } catch (error) {
+        res.send({ status: 500, message: 'server error', error })
+    }
+})
 
 module.exports = router;
