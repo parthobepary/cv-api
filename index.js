@@ -12,6 +12,7 @@ const uri = process.env.DB_LOCAL_STR;
 // controllers
 const todoController = require('./controller/todoController');
 const contactController = require('./controller/contactController');
+const authController = require('./controller/authController')
 
 const app = express();
 
@@ -36,6 +37,7 @@ db_connect()
 
 app.use('/api/todo', todoController);
 app.use('/api/contact', contactController);
+app.use('/api/auth', authController)
 
 app.get('/', (req, res) => {
     res.send('Hello world')
