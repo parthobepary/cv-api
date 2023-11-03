@@ -2,10 +2,29 @@ const express = require('express');
 const router = express.Router();
 const User = require('../schemas/userSchema');
 const { authSchema } = require('../helpers/userValidation');
-const { signAccessToken } = require('../helpers/jwt_token')
+const { signAccessToken, verifyAccessToken } = require('../helpers/jwt_token')
 
 
-// find all
+//get authentic user
+
+router.get('/user', verifyAccessToken, async (req, res) => {
+    try {
+        await User.find({})
+            .then((result) => {
+                return res.send({
+                    data: result,
+                    status: 200
+                })
+            })
+            .catch((err) => {
+                return res.send('server error');
+            })
+    } catch (error) {
+        res.send({ status: 500, message: 'Server error', error })
+    }
+})
+
+// login
 
 router.post('/login', async (req, res) => {
     try {
@@ -31,7 +50,7 @@ router.post('/login', async (req, res) => {
 });
 
 
-// create new contact
+// register new contact
 router.post('/register', async (req, res) => {
     try {
         const validUser = await authSchema.validateAsync(req.body);
@@ -57,7 +76,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// search api
+// search user
 
 router.post('/search', async (req, res) => {
     try {
@@ -67,7 +86,7 @@ router.post('/search', async (req, res) => {
     }
 })
 
-// update one
+// update user
 router.put('/:id', async (req, res) => {
     try {
         await User.findByIdAndUpdate({ _id: req.params.id }, req.body, { new: true })

@@ -4,6 +4,9 @@ const cors = require('cors');
 require("dotenv").config();
 const mongoose = require('mongoose')
 const body_parser = require('body-parser');
+const { verifyAccessToken } = require('./helpers/jwt_token');
+const createHttpError = require('http-errors');
+
 
 //variable 
 const port = process.env.PORT || 5000;
@@ -37,9 +40,29 @@ db_connect()
 
 app.use('/api/todo', todoController);
 app.use('/api/contact', contactController);
-app.use('/api/auth', authController)
+app.use('/api/auth', authController);
 
-app.get('/', (req, res) => {
+
+//error handel
+
+app.use(async (req, res, next) => {
+    const error = new Error('Not fond')
+    error.status = 404;
+    next(error)
+});
+app.use((err, req, res, next) => {
+    res.status(err.status || 500)
+    res.send({
+        error: {
+            status: err.status || 500,
+            message: err.message
+        }
+    })
+})
+
+// route
+
+app.get('/', verifyAccessToken, (req, res) => {
     res.send('Hello world')
 })
 

@@ -1,3 +1,4 @@
+const createHttpError = require('http-errors');
 const JWT = require('jsonwebtoken');
 
 module.exports = {
@@ -6,15 +7,27 @@ module.exports = {
             const payload = {
                 name: 'partho bepary'
             };
-            const secret = "Very secret token";
+            const secret = process.env.ACCESS_TOKEN;
             const options = {
                 // exp: Math.floor(Date.now() / 1000) + (60 * 60),
-                expiresIn: "1h",
+                expiresIn: "20s",
             };
             JWT.sign(payload, secret, options, (err, token) => {
                 if (err) reject(err)
                 resolve(token)
             })
+        })
+    },
+    verifyAccessToken: (req, res, next) => {
+        if (!req.headers['authorization']) return next(createHttpError.Unauthorized())
+        const authHeader = req.headers['authorization'];
+        const token = authHeader.split(' ')[1]
+        JWT.verify(token, process.env.ACCESS_TOKEN, (err, payload) => {
+            if (err) {
+                return next(createHttpError.Unauthorized());
+            }
+            req.payload = payload;
+            next();
         })
     }
 }
