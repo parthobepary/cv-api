@@ -117,3 +117,13 @@ module.exports = router;
 
 
 // https://www.youtube.com/watch?v=BnN3TQOG5-g
+
+// redis-server
+
+// sudo service redis-server restart
+
+// redis-commander
+
+// redis-cli
+
+// set key value

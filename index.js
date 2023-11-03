@@ -1,16 +1,21 @@
 // setup
 const express = require('express');
 const cors = require('cors');
+const morgan = require('morgan')
 require("dotenv").config();
+require("./helpers/init_mongo");
 const mongoose = require('mongoose')
 const body_parser = require('body-parser');
 const { verifyAccessToken } = require('./helpers/jwt_token');
 const createHttpError = require('http-errors');
+const redisClient = require('./helpers/init_redis')
 
+redisClient.SET('name', 'partho')
+
+// redis code
 
 //variable 
 const port = process.env.PORT || 5000;
-const uri = process.env.DB_LOCAL_STR;
 
 // controllers
 const todoController = require('./controller/todoController');
@@ -21,18 +26,9 @@ const app = express();
 
 // middleware 
 app.use(cors());
+app.use(morgan('dev'));
 app.use(body_parser.json());
 app.use(body_parser.urlencoded({ extended: true }));
-
-
-const db_connect = async () => {
-    await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, family: 4 })
-        .then(() => console.log('connection successful'))
-        .catch((er) => console.log(er))
-
-}
-
-db_connect()
 
 
 
