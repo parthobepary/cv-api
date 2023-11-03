@@ -2,7 +2,7 @@ const createHttpError = require('http-errors');
 const JWT = require('jsonwebtoken');
 
 module.exports = {
-    signAccessToken: () => {
+    signAccessToken: (userId) => {
         return new Promise((resolve, reject) => {
             const payload = {
                 name: 'partho bepary'
@@ -10,10 +10,10 @@ module.exports = {
             const secret = process.env.ACCESS_TOKEN;
             const options = {
                 // exp: Math.floor(Date.now() / 1000) + (60 * 60),
-                expiresIn: "20s",
+                expiresIn: "1h",
             };
             JWT.sign(payload, secret, options, (err, token) => {
-                if (err) reject(err)
+                if (err) reject(createHttpError.InternalServerError())
                 resolve(token)
             })
         })
@@ -29,5 +29,31 @@ module.exports = {
             req.payload = payload;
             next();
         })
-    }
+    },
+    signRefreshToken: (userId) => {
+        return new Promise((resolve, reject) => {
+            const payload = {};
+            const secret = process.env.REFRESH_TOKEN;
+            const options = {
+                expiresIn: "2y",
+                issuer: 'partho bepary',
+                audience: userId
+            };
+            JWT.sign(payload, secret, options, (err, token) => {
+                if (err) reject(createHttpError.InternalServerError())
+                resolve(token)
+            })
+        })
+    },
+
+    verifyRefreshToken: (refreshToken) => {
+        return new Promise((resolve, reject) => {
+            JWT.verify(refreshToken, process.env.REFRESH_TOKEN, (err, payload) => {
+                if (err) reject(createHttpError.Unauthorized())
+                const userId = payload.aud;
+
+                resolve(userId)
+            })
+        })
+    },
 }

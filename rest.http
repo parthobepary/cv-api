@@ -1,1 +1,8 @@
 GET http://localhost:5000/
+
+POST http://localhost:5000/api/auth/refresh-token
+Content-Type: application/json
+
+{
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2OTg5OTM4OTgsImV4cCI6MTc2MjEwOTA5OCwiYXVkIjoiNjU0NDk2NWI1MzYyOTgxYWE2MTc0NzhiIiwiaXNzIjoicGFydGhvIGJlcGFyeSJ9.weZaPu43nLxUFZ1xDb_FWcafPkvOqSrN22UuOQ_UXEI"
+}
