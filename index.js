@@ -10,9 +10,13 @@ const { verifyAccessToken } = require('./helpers/jwt_token');
 const createHttpError = require('http-errors');
 const redisClient = require('./helpers/init_redis')
 
-redisClient.SET('name', 'partho')
 
 // redis code
+redisClient.SET('name', 'partho');
+
+redisClient.GET('foo')
+    .then((value) => console.log(value))
+    .catch((err) => console.log(err))
 
 //variable 
 const port = process.env.PORT || 5000;

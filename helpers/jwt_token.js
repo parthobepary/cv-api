@@ -1,5 +1,6 @@
 const createHttpError = require('http-errors');
 const JWT = require('jsonwebtoken');
+const redisClient = require('./init_redis')
 
 module.exports = {
     signAccessToken: (userId) => {
@@ -40,8 +41,19 @@ module.exports = {
                 audience: userId
             };
             JWT.sign(payload, secret, options, (err, token) => {
-                if (err) reject(createHttpError.InternalServerError())
-                resolve(token)
+                if (err) {
+                    console.log(err.message);
+                    reject(createHttpError.InternalServerError())
+                }
+                redisClient.SET(userId, token, 'EX', 36 * 24 * 24 * 60)
+                    .then((result) => {
+                        resolve(token)
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        reject(createHttpError.InternalServerError());
+                        return
+                    })
             })
         })
     },
@@ -51,8 +63,16 @@ module.exports = {
             JWT.verify(refreshToken, process.env.REFRESH_TOKEN, (err, payload) => {
                 if (err) reject(createHttpError.Unauthorized())
                 const userId = payload.aud;
-
-                resolve(userId)
+                redisClient.GET(userId)
+                    .then((result) => {
+                        if (refreshToken == result) return resolve(token);
+                        reject(createHttpError.InternalServerError())
+                    })
+                    .catch((err) => {
+                        console.log(err.message);
+                        reject(createHttpError.InternalServerError());
+                        return
+                    })
             })
         })
     },
